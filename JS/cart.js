@@ -2,23 +2,20 @@ let myCart = [];
 let discount = 0;
 let itemsQuantity = 0;
 let subTotal = 0;
-const applyingPromoCode = () =>{
+const applyingPromoCode = () => {
     let passed = false;
     let inputValue = document.querySelector('div.promotion div input[type="text"]').value;
-    if(inputValue.length > 5){
+    if (inputValue.length > 5) {
         passed = false;
-    }
-    else if(inputValue.length < 5){
+    } else if (inputValue.length < 5) {
         passed = false;
-    }
-    else{
+    } else {
         let re = new RegExp('[a-z0-9A-Z]{5}');
         passed = re.test(inputValue);
     }
-    if(passed){
+    if (passed) {
         discount = 0.5;
-    }
-    else{
+    } else {
         discount = 0;
     }
     applyPromoToCode();
@@ -26,50 +23,50 @@ const applyingPromoCode = () =>{
 
 const applyPromoToCode = () => {
     document.querySelector('div.calculation > div.discount').innerHTML = `${discount*100}%`;
-    if(discount === 0){
+    if (discount === 0) {
         document.querySelector('div.calculation > div.estimatedTotal').innerHTML = `$${subTotal}`;
-    }else{
-    document.querySelector('div.calculation > div.estimatedTotal').innerHTML = `$${discount * subTotal}`;
+    } else {
+        document.querySelector('div.calculation > div.estimatedTotal').innerHTML = `$${discount * subTotal}`;
     }
 }
 
 const getTotalItems = () => {
     let cartContents = JSON.parse(localStorage.getItem('myCart'));
-    for(let i of cartContents){
+    for (let i of cartContents) {
         itemsQuantity += parseInt(i.productQuantity);
     }
     document.querySelector('div.cart > span.cart-count').innerHTML = itemsQuantity;
     document.querySelector('div.head > span > span.cart-count').innerHTML = itemsQuantity;
     document.querySelector('h1 span.cartItems').innerHTML = itemsQuantity;
- }
+}
 
- const getSubTotal = () =>{
-     let cartContents = JSON.parse(localStorage.getItem('myCart'));
-     for(let i of cartContents){
+const getSubTotal = () => {
+    let cartContents = JSON.parse(localStorage.getItem('myCart'));
+    for (let i of cartContents) {
         subTotal += parseInt(i.productQuantity) * parseInt(i.productPrice);
-     }
-     let subTotalCont = document.querySelector('div.calculation > div.subtotalAmount');
-     subTotalCont.innerHTML += `$${subTotal}`;
-     document.querySelector('div.calculation > div.estimatedTotal').innerHTML = `$${subTotal}`;
- }
+    }
+    let subTotalCont = document.querySelector('div.calculation > div.subtotalAmount');
+    subTotalCont.innerHTML += `$${subTotal}`;
+    document.querySelector('div.calculation > div.estimatedTotal').innerHTML = `$${subTotal}`;
+}
 
- getSubTotal();
+getSubTotal();
 
 getTotalItems();
 
 window.onload = () => {
-    if(localStorage.getItem('myCart') !== null){
+    if (localStorage.getItem('myCart') !== null) {
         myCart = JSON.parse(localStorage.getItem('myCart'));
-    }else{
+    } else {
         console.log("Empty Cart");
     }
     generateHTML(myCart);
-        
+
 }
 
-const generateHTML = cartContent =>{
+const generateHTML = cartContent => {
     const mainCartContent = document.querySelector('div.cartContents');
-    for(let content of cartContent){
+    for (let content of cartContent) {
         let cartItem = document.createElement('div');
         mainCartContent.appendChild(cartItem);
         cartItem.innerHTML = `
@@ -128,36 +125,36 @@ const generateHTML = cartContent =>{
 
          </div>
         
-        `   
+        `
     }
 
     let selectElements = Array.from(document.querySelectorAll('select'));
-for(let i in selectElements){
-    selectElements[i].selectedIndex = myCart[i]['productQuantity'] - 1;
-}
+    for (let i in selectElements) {
+        selectElements[i].selectedIndex = myCart[i]['productQuantity'] - 1;
+    }
 
-productQuantityUpdate(selectElements);
+    productQuantityUpdate(selectElements);
 
-let removeProduct = document.querySelectorAll('p.edit-area > a:nth-child(3)');
-removeProduct.forEach(item => {
-    item.addEventListener('click', (e) => {
-        e.preventDefault();
-        let contents = e.target.parentElement.parentElement.children;    
-        let pIndex = extractText(contents);  
-        if(pIndex > -1){
-            myCart.splice(pIndex, 1);
-            localStorage['myCart'] = JSON.stringify(myCart);
-            handleReloading();    
-        }
-        
-    }, false);
+    let removeProduct = document.querySelectorAll('p.edit-area > a:nth-child(3)');
+    removeProduct.forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            let contents = e.target.parentElement.parentElement.children;
+            let pIndex = extractText(contents);
+            if (pIndex > -1) {
+                myCart.splice(pIndex, 1);
+                localStorage['myCart'] = JSON.stringify(myCart);
+                handleReloading();
+            }
 
-})  
+        }, false);
+
+    })
 }
 
 
 let first = document.querySelector('div.promotion div input[type="button"]');
-first.addEventListener('click', applyingPromoCode,false);
+first.addEventListener('click', applyingPromoCode, false);
 
 const handleReloading = _ => {
     document.querySelector('div.cartContents').innerHTML = '';
@@ -166,7 +163,7 @@ const handleReloading = _ => {
     document.querySelector('div.calculation > div.subtotalAmount').innerHTML = '';
     itemsQuantity = 0;
     subTotal = 0;
-    
+
     getTotalItems();
     getSubTotal();
 
@@ -174,36 +171,35 @@ const handleReloading = _ => {
 
 const extractText = element => {
     let pName = element[0].innerText;
-        let pStyle = element[1].innerText.slice(7,13);
-        let pColor = element[1].innerText.slice(21);
-        let pSize = element[2].innerText.slice(5);
-        let pIndex = myCart.findIndex(x =>{
-            return (x.productName === pName && 
-                    x.productStyle === pStyle && 
-                    x.productColor === pColor && 
-                    x.productSize.trim() === pSize.trim()
-                );
-            } );
-            return pIndex; 
+    let pStyle = element[1].innerText.slice(7, 13);
+    let pColor = element[1].innerText.slice(21);
+    let pSize = element[2].innerText.slice(5);
+    let pIndex = myCart.findIndex(x => {
+        return (x.productName === pName &&
+            x.productStyle === pStyle &&
+            x.productColor === pColor &&
+            x.productSize.trim() === pSize.trim()
+        );
+    });
+    return pIndex;
 }
 
 const productQuantityUpdate = selectElements => {
-    for(let i of selectElements){
-        i.addEventListener('change', (e) =>{
+    for (let i of selectElements) {
+        i.addEventListener('change', (e) => {
             let targetedElement = e.target;
             let newQuantity = targetedElement.options[targetedElement.selectedIndex].value;
             let containerElement = targetedElement.parentElement.parentElement.parentElement.previousElementSibling;
             let contents = containerElement.children[1].children;
-            let pIndex = extractText(contents); 
-            if(pIndex > -1){
+            let pIndex = extractText(contents);
+            if (pIndex > -1) {
                 myCart[pIndex].productQuantity = newQuantity;
                 localStorage['myCart'] = JSON.stringify(myCart);
                 handleReloading();
             }
-              
+
         }, false);
 
-        
+
     }
 }
-
